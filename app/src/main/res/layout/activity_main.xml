@@ -1,5 +1,5 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
-    android:name="com.dotmatrix.popularmovies.MainActivityFragment"
-    tools:layout="@layout/fragment_main" android:layout_width="match_parent"
+    android:name="com.dotmatrix.popularmovies.MoviesFragmant"
+    tools:layout="@layout/fragmant_movies" android:layout_width="match_parent"
     android:layout_height="match_parent" />
