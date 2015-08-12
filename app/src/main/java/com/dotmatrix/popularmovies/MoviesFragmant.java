@@ -1,8 +1,11 @@
 package com.dotmatrix.popularmovies;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,12 +38,12 @@ public class MoviesFragmant extends Fragment {
     private Bundle[] resultBundle;
 
     // These are the names of the JSON objects that need to be extracted.
-    final String TMDB_RESULTS = "results";
+/*    final String TMDB_RESULTS = "results";
     final String BACKDROP_PATH = "backdrop_path";
     final String ORIGINAL_TITLE = "original_title";
     final String OVERVIEW = "overview";
     final String RELEASE_DATE = "release_date";
-    final String VOTE_AVERAGE = "vote_average";
+    final String VOTE_AVERAGE = "vote_average";*/
 
 
     public MoviesFragmant() {
@@ -58,13 +61,17 @@ public class MoviesFragmant extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragmant_movies, container, false);
 
         mGridViewAdapter = new GridViewAdapter(rootView.getContext(), urls);
-        GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
+        final GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
         gridView.setAdapter(mGridViewAdapter);
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
+                //ImageItem item = (ImageItem) parent.getItemAtPosition(position);
+                Log.v("image", gridView.getItemAtPosition(position).toString());
+                Intent intent = new Intent(getActivity(), MovieDetailActivity.class).putExtra("MOVIE_DETAIL", resultBundle[position]);
+                startActivity(intent);
                 //Log.v("item", String.valueOf(position));
             }
         });
@@ -86,7 +93,7 @@ public class MoviesFragmant extends Fragment {
             throws JSONException {
 
         JSONObject movieJson = new JSONObject(MovieJsonStr);
-        JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
+        JSONArray movieArray = movieJson.getJSONArray(getString(R.string.TMDB_RESULTS));
 
 
         resultBundle = new Bundle[movieArray.length()];
@@ -101,30 +108,20 @@ public class MoviesFragmant extends Fragment {
             // Get the JSON object representing the day
             JSONObject movieInfo = movieArray.getJSONObject(i);
 
-            /*
-            // The date/time is returned as a long.  We need to convert that
-            // into something human-readable, since most people won't read "1400356800" as
-            // "this saturday".
-            long dateTime;
-            // Cheating to convert this to UTC time, which is what we want anyhow
-            dateTime = dayTime.setJulianDay(julianStartDay+i);
-            day = getReadableDateString(dateTime);
-            */
 
-
-            backdropPath = movieInfo.getString(BACKDROP_PATH);
-            originalTitle = movieInfo.getString(ORIGINAL_TITLE);
-            overview = movieInfo.getString(OVERVIEW);
-            releaseDate = movieInfo.getString(RELEASE_DATE);
-            voteAverage = movieInfo.getString(VOTE_AVERAGE);
+            backdropPath = movieInfo.getString(getString(R.string.BACKDROP_PATH));
+            originalTitle = movieInfo.getString(getString(R.string.ORIGINAL_TITLE));
+            overview = movieInfo.getString(getString(R.string.OVERVIEW));
+            releaseDate = movieInfo.getString(getString(R.string.RELEASE_DATE));
+            voteAverage = movieInfo.getString(getString(R.string.VOTE_AVERAGE));
 
             Bundle bundle = new Bundle();
 
-            bundle.putString(BACKDROP_PATH, backdropPath);
-            bundle.putString(ORIGINAL_TITLE, originalTitle);
-            bundle.putString(OVERVIEW, overview);
-            bundle.putString(RELEASE_DATE, releaseDate);
-            bundle.putString(VOTE_AVERAGE, voteAverage);
+            bundle.putString(getString(R.string.BACKDROP_PATH), backdropPath);
+            bundle.putString(getString(R.string.ORIGINAL_TITLE), originalTitle);
+            bundle.putString(getString(R.string.OVERVIEW), overview);
+            bundle.putString(getString(R.string.RELEASE_DATE), releaseDate);
+            bundle.putString(getString(R.string.VOTE_AVERAGE), voteAverage);
 
             resultBundle[i] = bundle;
 
@@ -171,7 +168,6 @@ public class MoviesFragmant extends Fragment {
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
                     // Nothing to do.
-                    //forecastJsonStr = null;
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -186,7 +182,6 @@ public class MoviesFragmant extends Fragment {
 
                 if (buffer.length() == 0) {
                     // Stream was empty.  No point in parsing.
-                    //forecastJsonStr = null;
                     return null;
                 }
                 movieJsonStr = buffer.toString();
@@ -226,7 +221,7 @@ public class MoviesFragmant extends Fragment {
                 //urls = new String[result.length];
 
                 for (int i = 0; i < result.length; i++){
-                    urls.add("http://image.tmdb.org/t/p/w342/" + result[i].getString(BACKDROP_PATH));
+                    urls.add("http://image.tmdb.org/t/p/w342/" + result[i].getString(getString(R.string.BACKDROP_PATH)));
                     //urls.add("http://image.tmdb.org/t/p/w185/" + result[i].getString(BACKDROP_PATH));
                     //Log.v("url", urls[i]);
                 }
@@ -243,7 +238,9 @@ public class MoviesFragmant extends Fragment {
 
     public void updateMovie(){
         FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute("popularity.desc");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String movie_sort_by = preferences.getString(getString(R.string.pref_movie_sort_by_key), getString(R.string.pref_movie_sort_by_default));
+        movieTask.execute(movie_sort_by);
     }
 
 

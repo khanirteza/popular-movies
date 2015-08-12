@@ -2,4 +2,18 @@
     <string name="app_name">Popular Movies</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="detail_movie_title">Title</string>
+    <string name="detail_plot_title">Plot</string>
+    <string name="detail_user_rating_title">Rating:</string>
+    <string name="detail_release_date_title">Release Date:</string>
+
+
+    <string name="TMDB_RESULTS">results</string>
+    <string name="BACKDROP_PATH">backdrop_path</string>
+    <string name="ORIGINAL_TITLE">original_title</string>
+    <string name="OVERVIEW">overview</string>
+    <string name="RELEASE_DATE">release_date</string>
+    <string name="VOTE_AVERAGE">vote_average</string>
+    <string name="title_activity_movie_detail">Detail</string>
+
 </resources>
